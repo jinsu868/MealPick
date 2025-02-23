@@ -1,0 +1,18 @@
+= Spring REST Docs Test
+:doctype: book
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:seclinks:
+
+include::login-controller-test.adoc[]
+include::member-controller-test.adoc[]
+include::comment-controller-test.adoc[]
+include::comment-like-controller-test.adoc[]
+include::follow-controller-test.adoc[]
+include::post-controller-test.adoc[]
+include::scrab-controller-test.adoc[]
+include::chat-controller-test.adoc[]
+include::chat-room-controller-test.adoc[]
+include::tag-controller-test.adoc[]
+

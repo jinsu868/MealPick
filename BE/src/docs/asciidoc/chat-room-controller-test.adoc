@@ -1,0 +1,22 @@
+== ChatRoomController
+
+=== 채팅방을 생성한다. (POST /api/v1/chat-rooms)
+
+==== 요청
+
+include::{snippets}/chat-room-controller-test/can_create_chat_room/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/chat-room-controller-test/can_create_chat_room/http-response.adoc[]
+
+
+=== 채팅방을 조회한다. (GET /api/v1/chat-rooms?pageToken={pageToken})
+
+==== 요청
+
+include::{snippets}/chat-room-controller-test/retrieve_all_chat_rooms/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/chat-room-controller-test/retrieve_all_chat_rooms/http-response.adoc[]

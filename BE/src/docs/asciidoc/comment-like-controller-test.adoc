@@ -1,0 +1,23 @@
+== CommentLikeController
+
+=== 댓글 좋아요 (POST /api/v1/comments/{commentId}/like)
+
+==== 요청
+
+include::{snippets}/comment-like-controller-test/can_create_comment_like/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}//comment-like-controller-test/can_create_comment_like/http-response.adoc[]
+
+
+
+=== 댓글 좋아요 취소 (DELETE /api/v1/comments/{commentId}/cancel-like)
+
+==== 요청
+
+include::{snippets}/comment-like-controller-test/can_cancel_comment_like/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}//comment-like-controller-test/can_cancel_comment_like/http-response.adoc[]

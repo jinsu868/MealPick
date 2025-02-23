@@ -1,0 +1,23 @@
+== PostLikeController
+
+=== 게시물 좋아요 (POST /api/v1/posts/{postId}/like)
+
+==== 요청
+
+include::{snippets}/post-like-controller-test/test_create_post_like/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}//post-like-controller-test/test_create_post_like/http-response.adoc[]
+
+
+
+=== 게시물 좋아요 취소 (DELETE /api/v1/posts/{postId}/cancel-like)
+
+==== 요청
+
+include::{snippets}/post-like-controller-test/test_cancel_post_like/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}//post-like-controller-test/test_cancel_post_like/http-response.adoc[]

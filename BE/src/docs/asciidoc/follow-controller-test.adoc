@@ -1,0 +1,45 @@
+== Follow API
+
+=== 팔로우 신청 API
+==== HTTP Request
+include::{snippets}/follow-controller-test/follow_request/http-request.adoc[]
+
+==== HTTP Response
+include::{snippets}/follow-controller-test/follow_request/http-response.adoc[]
+
+
+=== 팔로우 핸들링 API (거절, 승인..)
+==== HTTP Request
+include::{snippets}/follow-controller-test/handle_follow_request/http-request.adoc[]
+
+==== HTTP Response
+include::{snippets}/follow-controller-test/handle_follow_request/http-response.adoc[]
+
+
+=== 팔로워 목록 조회
+==== HTTP Request
+include::{snippets}/follow-controller-test/test-fetch-followers/http-request.adoc[]
+
+==== HTTP Response
+include::{snippets}/follow-controller-test/test-fetch-followers/http-response.adoc[]
+
+=== 팔로잉 목록 조회
+==== HTTP Request
+include::{snippets}/follow-controller-test/test-fetch-follows/http-request.adoc[]
+
+==== HTTP Response
+include::{snippets}/follow-controller-test/test-fetch-follows/http-response.adoc[]
+
+=== 팔로우 요청 목록 조회
+==== HTTP Request
+include::{snippets}/follow-controller-test/test-fetch-follow-request/http-request.adoc[]
+
+==== HTTP Response
+include::{snippets}/follow-controller-test/test-fetch-follow-request/http-response.adoc[]
+
+=== 언팔로우
+==== HTTP Request
+include::{snippets}/follow-controller-test/test-unfollow/http-request.adoc[]
+
+==== HTTP Response
+include::{snippets}/follow-controller-test/test-unfollow/http-response.adoc[]

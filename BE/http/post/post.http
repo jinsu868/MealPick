@@ -1,0 +1,9 @@
+
+### 2) Posts 조회하기
+GET http://localhost:8080/api/v1/posts
+Authorization: Bearer {{TEST_ACCESS_TOKEN}}
+
+
+### scrab
+POST http://localhost:8080/api/v1/posts/1/scrab
+Authorization: Bearer {{TEST_ACCESS_TOKEN}}

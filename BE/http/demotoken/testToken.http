@@ -1,0 +1,27 @@
+### 1) 토큰 발급 받기
+GET http://localhost:8080/api/test/access-token
+Accept: application/json
+
+> {%
+    client.test("응답이 200이어야 함", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+
+    let responseBody = JSON.parse(response.body);
+    let testToken = responseBody.accessToken;
+    client.global.set("TEST_ACCESS_TOKEN", testToken);
+%}
+
+### 1) 토큰 발급 받기
+GET http://localhost:8080/api/test/access-token/2
+Accept: application/json
+
+> {%
+    client.test("응답이 200이어야 함", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+
+    let responseBody = JSON.parse(response.body);
+    let testToken = responseBody.accessToken;
+    client.global.set("TEST_ACCESS_TOKEN", testToken);
+%}

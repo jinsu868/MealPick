@@ -1,0 +1,123 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_REGISTRY = credentials('docker-registry-credentials')
+        ENV_FILE = credentials('fe-env-file')
+        NODE_HOME = '/usr/local/bin'
+        PATH = "${NODE_HOME}:${env.PATH}"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Setup Environment') {
+            steps {
+                dir('FE') {
+                    withCredentials([file(credentialsId: 'fe-env-file', variable: 'ENV_FILE')]) {
+                        sh '''
+                          mkdir -p docker
+                          cp $ENV_FILE .env
+                          chmod 644 .env
+
+                          echo "======"
+                          cat .env
+
+
+                          mkdir -p FE/docker
+                          cp $ENV_FILE FE/docker/.env
+                          chmod 644 FE/docker/.env
+
+                          # 디버깅용 로그 출력
+                          echo "==== .env 파일 내용 확인 ===="
+                          cat FE/docker/.env
+
+
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                dir('FE') {
+                    sh '''
+                        export NODE_HOME=/usr/local/bin
+                        export PATH=$NODE_HOME:$PATH
+                        npm install
+                    '''
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                dir('FE') {
+                    sh 'npm run build'
+                }
+            }
+        }
+
+        stage('Build and Push Docker Image') {
+            steps {
+                dir('FE') {
+                    script {
+                        withCredentials([usernamePassword(
+                            credentialsId: 'docker-registry-credentials',
+                            usernameVariable: 'DOCKER_USER',
+                            passwordVariable: 'DOCKER_PASS'
+                        )]) {
+                            def imageTag = "camelia9999/frontend:${BUILD_NUMBER}"
+                            sh """
+                                echo '$DOCKER_PASS' | docker login -u '$DOCKER_USER' --password-stdin
+                                cp -r dist docker/
+                                cd docker
+                                docker build -t ${imageTag} .
+                                docker push ${imageTag}
+                                rm -rf dist
+                                echo "Successfully built and pushed image: ${imageTag}"
+                            """
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                dir('FE/docker') {
+                    sh """
+                        BUILD_NUMBER=${BUILD_NUMBER} docker-compose down
+                        BUILD_NUMBER=${BUILD_NUMBER} docker-compose up -d
+                        docker-compose ps
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            dir('FE') {
+                sh '''
+                    rm -f .env
+                    rm -f docker/.env
+                    docker image prune -f
+                    docker container prune -f
+                '''
+                cleanWs()
+            }
+        }
+        success {
+            echo 'Frontend deployment successful!'
+        }
+        failure {
+            echo 'Frontend deployment failed!'
+        }
+    }
+}

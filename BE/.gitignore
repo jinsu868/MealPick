@@ -1,0 +1,58 @@
+HELP.md
+.gradle
+.DS_Store
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### IntelliJ IDEA ###
+.idea/*
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+
+### .DS_Store ###
+**/.DS_Store
+
+
+### application*.yml ###
+src/main/resources/*.yml
+src/test/resources/*.yml
+src/test/resources/application.yml
+
+### Spring REST docs ###
+src/main/resources/static/docs/*.html
+
+### *.SQL ###
+src/main/resources/*.sql
+src/test/resources/data/*.sql
+
+src/main/resources/firebase/*.json
+.env

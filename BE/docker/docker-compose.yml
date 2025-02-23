@@ -1,0 +1,105 @@
+services:
+  zookeeper:
+    image: zookeeper
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    networks:
+      - alli-network
+
+  kafka:
+    image: wurstmeister/kafka
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${KAFKA_HOST:-kafka}:9092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CREATE_TOPICS: "Topic:1:1"
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - zookeeper
+    networks:
+      - alli-network
+
+  backend1:
+    image: camelia9999/backend:${BUILD_NUMBER}
+    ports:
+      - "${BACKEND1_PORT}:${BACKEND1_PORT}"
+    environment:
+      - SERVER_PORT=${BACKEND1_PORT}
+    env_file:
+      - .env
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - alli-network
+
+  backend2:
+    image: camelia9999/backend:${BUILD_NUMBER}
+    ports:
+      - "${BACKEND2_PORT}:${BACKEND2_PORT}"
+    environment:
+      - SERVER_PORT=${BACKEND2_PORT}
+    env_file:
+      - .env
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - alli-network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:${BACKEND2_PORT}/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  backend3:
+    image: camelia9999/backend:${BUILD_NUMBER}
+    ports:
+      - "${BACKEND3_PORT}:${BACKEND3_PORT}"
+    environment:
+      - SERVER_PORT=${BACKEND3_PORT}
+    env_file:
+      - .env
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - alli-network
+
+  mysql:
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - alli-network
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - alli-network
+
+networks:
+  alli-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+  redis-data:

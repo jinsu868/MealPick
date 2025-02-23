@@ -1,0 +1,75 @@
+#root {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 2rem;
+    text-align: center;
+}
+
+.logo {
+    height: 6em;
+    padding: 1.5em;
+    will-change: filter;
+    transition: filter 300ms;
+}
+.logo:hover {
+    filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+    filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    a:nth-of-type(2) .logo {
+        animation: logo-spin infinite 20s linear;
+    }
+}
+
+.card {
+    padding: 2em;
+}
+
+.read-the-docs {
+    color: #888;
+}
+
+/* 파도 애니메이션 */
+@keyframes wave {
+    0% {
+        background-position-x: 0;
+    }
+    100% {
+        background-position-x: 1440px;
+    }
+}
+
+/* 여름 배경 및 파도 효과 */
+.summer-wave {
+    background: linear-gradient(180deg, #00aaff 0%, #a3e7fc 60%, #fddb3a 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.summer-wave::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 30%;
+    z-index: -1;
+    /* 제공해주신 새로운 SVG를 데이터 URL로 인코딩 */
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23a2d9ff' fill-opacity='1' d='M0,32L40,42.7C80,53,160,75,240,122.7C320,171,400,245,480,261.3C560,277,640,235,720,197.3C800,160,880,128,960,144C1040,160,1120,224,1200,213.3C1280,203,1360,117,1400,74.7L1440,32L1440,320L1400,320C1360,320,1280,320,1200,320C1120,320,1040,320,960,320C880,320,800,320,720,320C640,320,560,320,480,320C400,320,320,320,240,320C160,320,80,320,40,320L0,320Z'%3E%3C/path%3E%3C/svg%3E")
+        repeat-x;
+    background-size: cover;
+    animation: wave 8s linear infinite;
+    pointer-events: none;
+}

@@ -1,0 +1,35 @@
+== ScrabController
+
+=== 게시글을 스크랩한다. (POST /api/v1/posts/{postId}/scrab)
+
+==== 요청
+
+include::{snippets}/scrab-controller-test/test_create_scrab/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/scrab-controller-test/test_create_scrab/http-response.adoc[]
+
+
+=== 스크랩한 게시글 목록을 가져온다. (GET /api/v1/scrabs)
+
+==== 요청
+
+include::{snippets}/scrab-controller-test/test_get_scrabs/http-request.adoc
+
+==== 응답
+
+include::{snippets}/scrab-controller-test/test_get_scrabs/http-response.adoc[]
+
+=== 스크랩을 삭제할 수 있다.. (DELETE /api/v1/scrabs/{postId})
+
+==== 요청
+
+include::{snippets}/scrab-controller-test/test_delete_scrab/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/scrab-controller-test/test_delete_scrab/http-response.adoc[]
+
+
+

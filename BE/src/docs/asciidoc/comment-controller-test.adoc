@@ -1,0 +1,71 @@
+== CommentController
+
+=== 게시글 루트 댓글을 생성한다. (POST /api/v1/posts/{postId}/comment)
+
+==== 요청
+
+include::{snippets}/comment-controller-test/create_root_comment/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/comment-controller-test/create_root_comment/http-response.adoc[]
+
+
+=== 게시글 대댓글을 생성한다. (POST /api/v1/comments/{rootCommentId}/write)
+
+==== 요청
+
+include::{snippets}/comment-controller-test/create_child_comment/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/comment-controller-test/create_child_comment/http-response.adoc[]
+
+
+=== 댓글을 삭제할 수 있다.. (DELETE /api/v1/comments/{commentId})
+
+==== 요청
+
+include::{snippets}/comment-controller-test/delete_comment/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/comment-controller-test/delete_comment/http-response.adoc[]
+
+
+=== 게시글에 속한 루트 댓글을 읽을 수 있다... (GET /api/v1/comments/{postId}/read?pageToken={value})
+최초 요청시 pageToken=null, 이후 응답에 있는 pageToken 을 QueryString에 포함
+
+==== 요청
+
+include::{snippets}/comment-controller-test/can_read_root_comment_in_post/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/comment-controller-test/can_read_root_comment_in_post/http-response.adoc[]
+
+
+=== 게시글에 속한 자식 댓글을 읽을 수 있다... (GET /api/v1/comments/{commentId}/child-read?pageToken={value})
+최초 요청시 pageToken=null, 이후 응답에 있는 pageToken 을 QueryString에 포함
+
+==== 요청
+
+include::{snippets}/comment-controller-test/can_read_child_comment/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/comment-controller-test/can_read_child_comment/http-response.adoc[]
+
+
+
+=== 댓글을 수정할 수 있다.. (PATCH /api/v1/comments/{commentId})
+
+==== 요청
+
+include::{snippets}/comment-controller-test/can_update_comment/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/comment-controller-test/can_update_comment/http-response.adoc[]
+
+

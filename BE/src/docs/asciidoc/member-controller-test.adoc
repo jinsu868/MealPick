@@ -1,0 +1,45 @@
+== MemberController
+
+=== 내 정보 조회 (GET /api/v1/members/me)
+
+==== 요청
+
+include::{snippets}/member-controller-test/find_my_info/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/member-controller-test/find_my_info/http-response.adoc[]
+
+
+=== 다른 사람 정보 조회 (GET /api/v1/members/{memberId})
+
+==== 요청
+
+include::{snippets}/member-controller-test/test_find_other_member_retrieve/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/member-controller-test/test_find_other_member_retrieve/http-response.adoc[]
+
+
+=== 내 정보 수정 API (PATCH /api/v1/members/social)
+
+==== 요청
+
+include::{snippets}/member-controller-test/can_update_member/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/member-controller-test/can_update_member/http-response.adoc[]
+
+
+
+=== 내 위치 정보 수정 API (PATCH /api/v1/members/location)
+
+==== 요청
+
+include::{snippets}/member-controller-test/update_member_location/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/member-controller-test/update_member_location/http-response.adoc[]

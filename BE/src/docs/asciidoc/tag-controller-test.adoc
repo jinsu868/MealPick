@@ -1,0 +1,22 @@
+== TagController
+
+=== 기간내의 태그에 속한 게시글 개수를 조회한다. (GET /api/v1/tags/{tagId}/chart?period=MONTH
+period = "MONTH", "QUARTER", "YEAR"
+
+==== 요청
+
+include::{snippets}/tag-controller-test/get_all_post_count_in_period/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/tag-controller-test/get_all_post_count_in_period/http-response.adoc[]
+
+=== 최근 한달 가장 많이 증가한 태그 3개를 보여줍니다. (GET /api/v1/tags/trending)
+
+==== 요청
+
+include::{snippets}/tag-controller-test/test_get_trending_tag_month/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/tag-controller-test/test_get_trending_tag_month/http-response.adoc[]

@@ -1,0 +1,9 @@
+== LoginControllerTest
+
+=== 회원가입 API
+==== HTTP Request
+include::{snippets}/login-controller-test/can_sign-up/http-request.adoc[]
+
+==== HTTP Response
+include::{snippets}/login-controller-test/can_sign-up/http-response.adoc[]
+

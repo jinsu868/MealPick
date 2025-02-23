@@ -1,0 +1,16 @@
+services:
+  frontend:
+    image: camelia9999/frontend:${BUILD_NUMBER}
+    container_name: frontend
+    ports:
+      - "5000:5000"
+    volumes:
+      - /etc/letsencrypt/live:/etc/letsencrypt/live:ro
+      - /etc/letsencrypt/archive:/etc/letsencrypt/archive:ro
+    networks:
+      - alli-network
+    restart: unless-stopped
+
+networks:
+  alli-network:
+    driver: bridge
