@@ -33,7 +33,8 @@ awesome image
 
 <div align="center">
   <h3> 인프라 아키텍처 </h3>
-  ![architecture](https://github.com/user-attachments/assets/8883745e-2e9c-436e-9e65-8af91ecad6a4)
+
+![architecture](https://github.com/user-attachments/assets/3cd1a45f-70a7-4af9-88b3-6d34641c4378)
 
 </div>
 
