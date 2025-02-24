@@ -2,21 +2,18 @@
 
 **▷  개발, 출시, 유지보수 기간 총 6주 (2025.01 ~ 2025.02) </br>**
 
-![밀픽로긴](/uploads/1dc9a8e3f8c8a13602077b50c51ecb14/밀픽로긴.png)
-
 ## MealPic이 제공합니다
 
 ### 1. 음식 랭킹
 
-![밀픽랭킹](/uploads/973fadae824959546e6a6ad2b910f53d/밀픽랭킹.png)
+![rank](https://github.com/user-attachments/assets/a6728cb4-e953-42af-9f78-c54825fe2398)
+
 
 
 ### 2. 내 주변 Pick
 
-![내주변](/uploads/bd963d1298fbe22fe60fbcebf515bd3d/내주변.png)
+<br/>![move](https://github.com/user-attachments/assets/574fd996-54cf-49cc-b763-aba94048d9aa)
 
-
-<br/>
 <br/>
 
 ## Frontend
@@ -36,7 +33,8 @@ awesome image
 
 <div align="center">
   <h3> 인프라 아키텍처 </h3>
-  ![mealpic](/uploads/e5d99859451711ae724f6323f0a4c2b6/mealpic.png)
+  ![architecture](https://github.com/user-attachments/assets/8883745e-2e9c-436e-9e65-8af91ecad6a4)
+
 </div>
 
 
