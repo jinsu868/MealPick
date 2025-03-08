@@ -45,16 +45,165 @@ public class ChatRoomService {
     private final MemberRepository memberRepository;
     private final ChatMemberRepository chatMemberRepository;
     private final ChatRepository chatRepository;
+
     private final RedisTemplate<String, Object> redisTemplate;
     private final JsonUtil jsonUtil;
     private final ApplicationEventPublisher eventPublisher;
 
-    /**
-     * 채팅방 생성후 입장 메시지를 생성한다.
-     * 해당 유저의 채팅방 캐시가 존재할 경우 캐시에 생성한 채팅방을 추가한다.
-     */
     @Transactional
     public ChatRoomCreateResponse createChatRoom(
+            ChatRoomCreateRequest chatRoomCreateRequest,
+            Member loginMember
+    ) {
+        if (!memberRepository.existsById(chatRoomCreateRequest.partnerId())) {
+            throw new BadRequestException(MEMBER_NOT_FOUND);
+        }
+
+        Long existChatRoomId = getExistChatRoomIdBetweenMember(
+                loginMember.getId(),
+                chatRoomCreateRequest.partnerId()
+        );
+
+        if (existChatRoomId != NOT_EXIST_CHAT_ROOM_BETWEEN_MEMBER) {
+            return ChatRoomCreateResponse.of(
+                    existChatRoomId,
+                    true
+            );
+        }
+
+        Member partner = memberRepository.findById(chatRoomCreateRequest.partnerId())
+                .orElseThrow(() -> new BadRequestException(MEMBER_NOT_FOUND));
+
+        ChatRoom chatRoom = ChatRoom.from(chatRoomCreateRequest.name());
+        chatRoomRepository.save(chatRoom);
+
+        Chat myEnterChat = Chat.createChat(loginMember, chatRoom.getId());
+        Chat partnerEnterChat = Chat.createChat(partner, chatRoom.getId());
+
+        chatRepository.save(myEnterChat);
+        chatRepository.save(partnerEnterChat);
+
+        ChatMember chatSelf = ChatMember.createChatMember(
+                loginMember.getId(),
+                chatRoom.getId(),
+                myEnterChat.getId()
+        );
+        ChatMember chatPartner = ChatMember.createChatMember(
+                chatRoomCreateRequest.partnerId(),
+                chatRoom.getId(),
+                partnerEnterChat.getId()
+        );
+
+        chatMemberRepository.save(chatSelf);
+        chatMemberRepository.save(chatPartner);
+
+        return ChatRoomCreateResponse.of(
+                chatRoom.getId(),
+                false
+        );
+    }
+
+    public List<ChatRoomResponse> findAll(Long loginMemberId) {
+        var chatRooms = findChatRooms(loginMemberId);
+        var chatRoomIdToLatestChatId = mapChatRoomIdToLatestChatId(chatRooms);
+        var chatIds = extractChatIds(chatRooms);
+        var chatRoomIds = extractChatRoomIds(chatRooms);
+        var chatRoomIdToYourInfo = mapChatRoomIdToYourInfo(loginMemberId, chatRoomIds);
+        var chatIdToContent = mapChatIdToChatContent(chatIds);
+
+        return chatRooms
+                .stream()
+                .map(queryResponse -> {
+                    Long latestChatId = chatRoomIdToLatestChatId.get(queryResponse.id());
+                    ChatSummary chatSummary = Optional.ofNullable(latestChatId)
+                            .map(chatIdToContent::get)
+                            .orElse(null);
+
+                    return new ChatRoomResponse(
+                            queryResponse.id(),
+                            queryResponse.name(),
+                            queryResponse.displayIdx(),
+                            chatRoomIdToYourInfo.get(queryResponse.id()).name(),
+                            chatSummary != null ? chatSummary.content() : "",
+                            chatSummary != null ? chatSummary.createdAt() : null,
+                            chatRoomIdToYourInfo.get(queryResponse.id()).profileImage()
+                    );
+                })
+                .toList();
+    }
+
+    private Map<Long, MemberSummary> mapChatRoomIdToYourInfo(
+            Long memberId,
+            List<Long> chatRoomIds
+    ) {
+        return chatMemberRepository.findAllByChatRoomIdIn(chatRoomIds).stream()
+                .filter(chatMember ->
+                        !chatMember.memberId().equals(memberId))
+                .collect(Collectors.toMap(
+                        ChatMemberQueryResponse::chatRoomId,
+                        chatMember -> MemberSummary.of(
+                                chatMember.name(),
+                                chatMember.profileImageUrl()
+                        ))
+                );
+    }
+
+    private List<Long> extractChatRoomIds(List<ChatRoomQueryResponse> chatRooms) {
+        return chatRooms.stream()
+                .map(ChatRoomQueryResponse::id)
+                .toList();
+    }
+
+    private Map<Long, ChatSummary> mapChatIdToChatContent(List<Long> chatIds) {
+        return chatRepository.findByChatIdIn(chatIds).stream()
+                .collect(Collectors.toMap(
+                        ChatQueryResponse::id,
+                        chat -> new ChatSummary(chat.content(), chat.createdAt())
+                ));
+    }
+
+    private Map<Long, Long> mapChatRoomIdToLatestChatId(List<ChatRoomQueryResponse> chatRooms) {
+        return chatRooms.stream()
+                .collect(Collectors.toMap(
+                        ChatRoomQueryResponse::id,
+                        ChatRoomQueryResponse::displayIdx
+                ));
+    }
+
+    private List<Long> extractChatIds(List<ChatRoomQueryResponse> chatRooms) {
+        return chatRooms
+                .stream()
+                .map(ChatRoomQueryResponse::displayIdx)
+                .toList();
+    }
+
+    private Long getExistChatRoomIdBetweenMember(
+            Long ownerId,
+            Long visitorId
+    ) {
+        var ownerChatMembers = chatMemberRepository.findByMemberId(ownerId);
+        var visitorChatMembers = chatMemberRepository.findByMemberId(visitorId);
+
+        for (ChatMember ownerChatMember : ownerChatMembers) {
+            for (ChatMember visitorChatMember : visitorChatMembers) {
+                if (ownerChatMember.getChatRoomId().equals(visitorChatMember.getChatRoomId())) {
+                    return ownerChatMember.getChatRoomId();
+                }
+            }
+        }
+
+        return NOT_EXIST_CHAT_ROOM_BETWEEN_MEMBER;
+    }
+
+    private List<ChatRoomQueryResponse> findChatRooms(Long memberId) {
+        return chatRoomRepository.findAll(memberId);
+    }
+
+    /**
+     * Deprecated : 채팅 캐시 제거에 따라서 사용하지 않게 됐습니다.
+     */
+    @Transactional
+    public ChatRoomCreateResponse createChatRoomDeprecated(
             ChatRoomCreateRequest chatRoomCreateRequest,
             Member loginMember
     ) {
@@ -135,10 +284,10 @@ public class ChatRoomService {
     }
 
     /**
-     * 캐시가 있으면 캐시에서 읽고 없으면 DB 에서 채팅방을 읽은 후 캐시에 적재한다.
+     * Deprecated : 채팅 캐시 제거에 따라서 사용하지 않게 됐습니다.
      */
     // Cache Hit
-    public List<ChatRoomResponse> findAll(Long loginMemberId) {
+    public List<ChatRoomResponse> findAllDeprecated(Long loginMemberId) {
         String key = String.format(MEMBERS_CHAT_ROOMS_KEY, loginMemberId);
         var zSetOps = redisTemplate.opsForZSet();
         if (redisTemplate.hasKey(key)) {
@@ -189,72 +338,5 @@ public class ChatRoomService {
         redisTemplate.expire(key, KEY_EXPIRE_TIME, TimeUnit.SECONDS);
 
         return chatRoomResponses;
-    }
-
-    private Map<Long, MemberSummary> mapChatRoomIdToYourInfo(
-            Long memberId,
-            List<Long> chatRoomIds
-    ) {
-        return chatMemberRepository.findAllByChatRoomIdIn(chatRoomIds).stream()
-                .filter(chatMember ->
-                        !chatMember.memberId().equals(memberId))
-                .collect(Collectors.toMap(
-                        ChatMemberQueryResponse::chatRoomId,
-                        chatMember -> MemberSummary.of(
-                                chatMember.name(),
-                                chatMember.profileImageUrl()
-                        ))
-                );
-    }
-
-    private List<Long> extractChatRoomIds(List<ChatRoomQueryResponse> chatRooms) {
-        return chatRooms.stream()
-                .map(ChatRoomQueryResponse::id)
-                .toList();
-    }
-
-    private Map<Long, ChatSummary> mapChatIdToChatContent(List<Long> chatIds) {
-        return chatRepository.findByChatIdIn(chatIds).stream()
-                .collect(Collectors.toMap(
-                        ChatQueryResponse::id,
-                        chat -> new ChatSummary(chat.content(), chat.createdAt())
-        ));
-    }
-
-    private Map<Long, Long> mapChatRoomIdToLatestChatId(List<ChatRoomQueryResponse> chatRooms) {
-        return chatRooms.stream()
-                .collect(Collectors.toMap(
-                        ChatRoomQueryResponse::id,
-                        ChatRoomQueryResponse::displayIdx
-                ));
-    }
-
-    private List<Long> extractChatIds(List<ChatRoomQueryResponse> chatRooms) {
-        return chatRooms
-                .stream()
-                .map(ChatRoomQueryResponse::displayIdx)
-                .toList();
-    }
-
-    private Long getExistChatRoomIdBetweenMember(
-            Long ownerId,
-            Long visitorId
-    ) {
-        var ownerChatMembers = chatMemberRepository.findByMemberId(ownerId);
-        var visitorChatMembers = chatMemberRepository.findByMemberId(visitorId);
-
-        for (ChatMember ownerChatMember : ownerChatMembers) {
-            for (ChatMember visitorChatMember : visitorChatMembers) {
-                if (ownerChatMember.getChatRoomId().equals(visitorChatMember.getChatRoomId())) {
-                    return ownerChatMember.getChatRoomId();
-                }
-            }
-        }
-
-        return NOT_EXIST_CHAT_ROOM_BETWEEN_MEMBER;
-    }
-
-    private List<ChatRoomQueryResponse> findChatRooms(Long memberId) {
-        return chatRoomRepository.findAll(memberId);
     }
 }

@@ -42,15 +42,102 @@ public class ChatService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMemberRepository chatMemberRepository;
     private final MemberRepository memberRepository;
+
+    /**
+     * Deprecated : 채팅 캐시 제거에 따라서 사용하지 않게 됐습니다.
+     */
     private final RedisTemplate<String, Object> redisTemplate;
     private final JsonUtil jsonUtil;
     private final ApplicationEventPublisher eventPublisher;
 
-    /**
-     * Write-Around
-     */
     @Transactional
     public ChatRelayRequest saveChat(
+            ChatRequest chatRequest,
+            Long memberId,
+            Long roomId
+    ) {
+        Member sender = findMember(memberId);
+
+        if (!chatRoomRepository.existsById(roomId)) {
+            throw new BadRequestException(CHAT_ROOM_NOT_FOUND);
+        }
+
+        List<ChatMember> chatMembers = findChatMember(chatRequest.roomId());
+
+        if (!isMemberInChatRoom(chatMembers, memberId)) {
+            throw new BadRequestException(MEMBER_NOT_IN_CHAT_ROOM);
+        }
+
+        Chat chat = Chat.createChat(
+                memberId,
+                chatRequest.content(),
+                chatRequest.roomId()
+        );
+        chatRepository.save(chat);
+
+        ChatMember chatPartner = chatMembers.get(0);
+        for (ChatMember chatMember : chatMembers) {
+            chatMember.updateDisplayIdx(chat.getId());
+            if (!sender.getId().equals(chatMember.getMemberId())) {
+                chatPartner = chatMember;
+            }
+        }
+
+        return ChatRelayRequest.of(
+                chat.getId(),
+                sender.getId(),
+                chatPartner.getMemberId(),
+                roomId,
+                sender.getProfileImage(),
+                chat.getCreatedAt(),
+                chat.getContent()
+        );
+    }
+
+    public PageInfo<ChatResponse> findAll(
+            Long chatRoomId,
+            Member loginMember,
+            String pageToken
+    ) {
+        if (!chatRoomRepository.existsById(chatRoomId)) {
+            throw new BadRequestException(CHAT_ROOM_NOT_FOUND);
+        }
+
+        if (!chatMemberRepository.existsByChatRoomIdAndMemberId(chatRoomId, loginMember.getId())) {
+            throw new BadRequestException(MEMBER_NOT_IN_CHAT_ROOM);
+        }
+
+        return chatRepository.findAll(
+                chatRoomId,
+                loginMember.getId(),
+                pageToken,
+                DEFAULT_PAGE_SIZE
+        );
+    }
+
+    private List<ChatMember> findChatMember(Long chatRoomId) {
+        return chatMemberRepository.findByChatRoomId(chatRoomId);
+    }
+
+    private Member findMember(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new BadRequestException(MEMBER_NOT_FOUND));
+    }
+
+    private boolean isMemberInChatRoom(List<ChatMember> chatMembers, Long memberId) {
+        for (ChatMember chatMember : chatMembers) {
+            if (chatMember.getMemberId().equals(memberId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Deprecated : 채팅 캐시 제거에 따라서 사용하지 않게 됐습니다.
+     */
+    @Transactional
+    public ChatRelayRequest saveChatDeprecated(
             ChatRequest chatRequest,
             Long memberId,
             Long roomId
@@ -138,9 +225,9 @@ public class ChatService {
     }
 
     /**
-     * Look Aside
+     * Deprecated : 채팅 캐시 제거에 따라서 사용하지 않게 됐습니다.
      */
-    public PageInfo<ChatResponse> findAll(
+    public PageInfo<ChatResponse> findAllDeprecated(
             Long chatRoomId,
             Member loginMember,
             String pageToken
@@ -265,35 +352,9 @@ public class ChatService {
         return PageInfo.of(chatDb.pageToken(), chatBefore, false);
     }
 
-    private List<ChatMember> findChatMember(Long chatRoomId) {
-        return chatMemberRepository.findByChatRoomId(chatRoomId);
-    }
-
-    private Member findMember(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new BadRequestException(MEMBER_NOT_FOUND));
-    }
-
-    private boolean isMemberInChatRoom(List<ChatMember> chatMembers, Long memberId) {
-        for (ChatMember chatMember : chatMembers) {
-            if (chatMember.getMemberId().equals(memberId)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private ChatRoomResponse getChatRoomResponse(
-            Long memberId,
-            ChatRoom chatRoom
-    ) {
-        return chatRoomRepository.findChatRoomByPartnerId(
-                chatRoom.getId(),
-                memberId).orElseThrow(
-                () -> new BadRequestException(MEMBER_NOT_IN_CHAT_ROOM)
-        );
-    }
-
+    /**
+     * Deprecated : 채팅 캐시 제거에 따라서 사용하지 않게 됐습니다.
+     */
     private List<ChatResponse> getChatsBefore(
             String key,
             Long lastScore,

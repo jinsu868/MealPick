@@ -11,6 +11,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+/**
+ * Deprecated : 채팅 캐시 제거에 따라서 사용하지 않게 됐습니다.
+ */
+
 @Component
 @RequiredArgsConstructor
 public class ChatEventHandler {
@@ -21,7 +25,7 @@ public class ChatEventHandler {
     private final RedisTemplate<String, Object> redisTemplate;
     private final JsonUtil jsonUtil;
 
-    @TransactionalEventListener
+//    @TransactionalEventListener
     public void handleCreateChatRoom(ChatRoomCreateEvent event) {
         String senderKey = String.format(MEMBERS_CHAT_ROOMS_KEY, event.senderId());
         String receiverKey = String.format(MEMBERS_CHAT_ROOMS_KEY, event.receiverId());
@@ -30,7 +34,7 @@ public class ChatEventHandler {
         saveChatRoomCache(event.partnerChatRoomResponse(), receiverKey);
     }
 
-    @TransactionalEventListener
+//    @TransactionalEventListener
     public void handleCreateChat(ChatCreateEvent event) {
         String chatRoomKey = String.format(CHAT_ROOM_KEY, event.roomId());
         saveChatCache(event.chatResponse(), chatRoomKey);

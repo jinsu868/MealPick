@@ -5,8 +5,11 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+/**
+ * Deprecated : 채팅 캐시 제거에 따라서 사용하지 않게 됐습니다.
+ */
 
 @Slf4j
 @Component
@@ -19,7 +22,6 @@ public class ChatCacheInvalidateScheduler {
     private final RedisTemplate<String, Object> redisTemplate;
 
 //    @Scheduled(cron = "0 0 3 * * *")
-    @Scheduled(cron = "0 */2 * * * *") // 테스트용, 2분마다 cache invalidate (100)
     public void invalidateChatCache() {
         log.info("Chat cache invalidated");
         Set<String> chatRoomKeys = redisTemplate.keys(CHAT_KEYS);
