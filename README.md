@@ -9,7 +9,7 @@
 
 ## 프로젝트 소개
 실시간으로 다른 사람이 어떤 음식을 먹고 있는지, 그리고 내가 먹은 음식을 다른 사람과 공유할 수 있습니다.
-팔로우/팔로잉 기능을 제공하며 다른 사람과 실시간 채팅이 가능합니다.
+팔로우/팔로잉 기능을 제공하며 다른 사람과 채팅이 가능합니다.
 
 
 ## 시스템 아키텍처
@@ -29,20 +29,21 @@ WebSocket과 Redis의 SortedSet 자료형을 활용하여 실시간 태그 랭�
 
 <img width="772" alt="2025-03-08_19-09-05" src="https://github.com/user-attachments/assets/40349bf5-a519-4d10-89ba-d596671247f7" />
 
-#### 코드
+### 코드
 <img width="724" alt="2025-03-08_18-09-39" src="https://github.com/user-attachments/assets/9097e213-5af4-417c-bf70-f295a0d72c8c" />
 
-처음에는 subscriber에서 각각 Redis에서 조회해서 응답해주는 구조였는데 publisher에서 한 번 조회해서 넘겨주는 방식으로 변경했습니다.
+처음에는 subscriber에서 각각 조회해서 응답해주는 구조였는데 publisher에서 한 번 조회해서 넘겨주는 방식으로 변경했습니다.
 
 ### 실시간 채팅 기능 구현
 
 WebSocket 기술을 활용하여 실시간 채팅 기능을 구현했습니다.
 
 ### 전체 플로우
-<img width="1003" alt="2025-03-08_19-25-30" src="https://github.com/user-attachments/assets/1cdd79af-67d9-429c-8d67-76015c2715d8" />
+<img width="996" alt="2025-03-08_20-29-27" src="https://github.com/user-attachments/assets/d993fb2e-f133-47c6-acd3-b4c8e7ca8ca1" />
 
 ### 코드
-<img width="792" alt="2025-03-08_19-38-27" src="https://github.com/user-attachments/assets/5df0ee0c-f9b1-404b-a190-8d8c4e56aac9" />
+<img width="788" alt="2025-03-08_20-26-43" src="https://github.com/user-attachments/assets/333edcba-4e9d-4365-9265-a3973b05971b" />
+
 
 
 현재 Consumer에서 Relay 전파를 할 때 별도의 스레드 풀을 생성하고 각 스레드에 RestTemplate으로 동기 I/O 방식으로 처리하고 있습니다.
