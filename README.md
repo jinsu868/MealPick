@@ -14,7 +14,7 @@
 
 ## 시스템 아키텍처
 
-<img width="957" alt="2025-03-08_17-40-58" src="https://github.com/user-attachments/assets/3bf37a8a-bea1-42b7-af31-1490b8da68fe" />
+<img width="1283" alt="2025-03-09_14-19-43" src="https://github.com/user-attachments/assets/7b91315a-9493-418e-a067-0341fb571a9a" />
 
 
 ## 기여한 부분
